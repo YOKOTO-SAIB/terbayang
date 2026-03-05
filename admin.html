@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — YokotoFX Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--bg2:#080810;--bg3:#0d0d18;--card:#0a0a16;--border:#162040;--blue:#1a6cc8;--blue2:#2480e8;--blue3:#0d4a94;--text:#fff;--text2:#a0b0c8;--text3:#50607a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;display:flex;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--blue3);}
+
+/* SIDEBAR */
+.aside{width:220px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.aside-logo{padding:18px 16px;border-bottom:1px solid var(--border);}
+.aside-logo .brand{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;}
+.aside-logo .brand em{font-style:normal;color:var(--blue2);}
+.role-tag{margin-top:6px;display:inline-block;padding:2px 10px;background:rgba(36,128,232,.15);border:1px solid var(--blue3);border-radius:20px;font-size:10px;color:var(--blue2);letter-spacing:1px;font-weight:700;}
+.aside-nav{flex:1;padding:10px 0;}
+.aside-nav button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;color:var(--text2);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px;border-left:3px solid transparent;transition:all .18s;text-align:left;}
+.aside-nav button:hover,.aside-nav button.act{color:#fff;background:rgba(36,128,232,.08);border-left-color:var(--blue2);}
+.aside-nav button span{font-size:16px;}
+.aside-footer{padding:14px 16px;border-top:1px solid var(--border);}
+.btn-logout{width:100%;background:rgba(192,64,64,.1);color:#e07070;border:1px solid #5a1a1a;padding:9px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;transition:background .2s;}
+.btn-logout:hover{background:rgba(192,64,64,.22);}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;padding:26px;min-height:100vh;}
+.page-head{margin-bottom:26px;}
+.page-head h1{font-family:'Orbitron',sans-serif;font-size:19px;font-weight:700;margin-bottom:4px;}
+.page-head p{color:var(--text2);font-size:13px;}
+
+/* SAVING INDICATOR */
+.saving-bar{position:fixed;top:0;left:220px;right:0;height:3px;background:var(--blue2);z-index:200;transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.saving-bar.on{transform:scaleX(1);}
+
+/* PANELS */
+.panel{display:none;}
+.panel.on{display:block;}
+
+/* STAT CARDS */
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center;}
+.stat-card .num{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:700;color:var(--blue2);}
+.stat-card .lbl{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+
+/* CARD BOX */
+.a-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:18px;}
+.a-card h3{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+
+/* LIST ITEMS */
+.list-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.li-icon{font-size:26px;flex-shrink:0;}
+.li-info{flex:1;min-width:0;}
+.li-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.li-sub{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-meta{font-size:11px;color:var(--blue2);font-weight:700;margin-top:2px;}
+.badge-on{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(36,128,232,.15);color:var(--blue2);border:1px solid var(--blue3);}
+.badge-off{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(80,80,80,.2);color:var(--text3);border:1px solid var(--border);}
+.badge-admin{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(36,128,232,.15);color:var(--blue2);border:1px solid var(--blue3);}
+.badge-user{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(50,180,50,.1);color:#4c4;border:1px solid #1a4a1a;}
+.badge-exp{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(192,64,64,.1);color:#c04040;border:1px solid #5a1a1a;}
+.badge-ok{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(36,128,232,.15);color:var(--blue2);border:1px solid var(--blue3);}
+.badge-warn{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(200,150,0,.12);color:#c8a020;border:1px solid #5a4400;}
+.li-actions{display:flex;gap:6px;flex-shrink:0;}
+
+/* BUTTONS */
+.btn-add{background:var(--blue3);color:#fff;border:1px solid var(--blue2);padding:9px 18px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;transition:background .2s;margin-bottom:14px;}
+.btn-add:hover{background:var(--blue2);}
+.btn-sm{padding:6px 11px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;transition:background .18s;letter-spacing:.5px;}
+.btn-edit{background:rgba(36,128,232,.1);color:var(--blue2);border-color:var(--blue3);}
+.btn-edit:hover{background:rgba(36,128,232,.25);}
+.btn-del{background:rgba(192,64,64,.1);color:#e07070;border-color:#5a1a1a;}
+.btn-del:hover{background:rgba(192,64,64,.22);}
+.btn-save{background:var(--blue2);color:#fff;border:none;padding:11px 22px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;transition:background .2s;}
+.btn-save:hover{background:var(--blue3);}
+.btn-save:disabled{background:var(--text3);cursor:not-allowed;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.inp-g{margin-bottom:12px;}
+.inp-g label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase;}
+.inp-g input,.inp-g select,.inp-g textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:#fff;padding:10px 12px;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:border-color .2s;resize:vertical;}
+.inp-g input:focus,.inp-g select:focus,.inp-g textarea:focus{border-color:var(--blue2);}
+.inp-g select option{background:var(--bg3);}
+.inp-g input[type=checkbox]{width:auto;cursor:pointer;}
+
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--card);}
+.upload-zone:hover{border-color:var(--blue2);}
+.upload-zone p{color:var(--text2);font-size:14px;}
+.upload-zone .uz-icon{font-size:36px;margin-bottom:10px;}
+.hosted-link{font-size:12px;color:var(--blue2);text-decoration:none;word-break:break-all;}
+.hosted-link:hover{text-decoration:underline;}
+
+/* MODAL */
+.m-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;}
+.m-overlay.on{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:480px;padding:28px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px;}
+.m-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;}
+.m-close:hover{color:#fff;}
+.modal-actions{display:flex;gap:10px;margin-top:16px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:13px 18px;font-size:14px;font-weight:600;transform:translateY(70px);opacity:0;transition:all .28s;pointer-events:none;max-width:300px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:var(--blue2);}
+.toast.err{border-color:#c04040;}
+.toast.saving{border-color:var(--blue3);}
+
+@media(max-width:700px){.aside{width:190px;}.main{margin-left:190px;padding:16px;}.form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="saving-bar" id="saving-bar"></div>
+
+<!-- ASIDE -->
+<aside class="aside">
+  <div class="aside-logo">
+    <div class="brand">Yokoto<em>FX</em> Studio</div>
+    <div class="role-tag">⚙️ ADMIN PANEL</div>
+  </div>
+  <nav class="aside-nav">
+    <button onclick="showPanel('dashboard')" class="act" id="nav-dashboard"><span>📊</span> Dashboard</button>
+    <button onclick="showPanel('products')" id="nav-products"><span>📦</span> Produk</button>
+    <button onclick="showPanel('codes')" id="nav-codes"><span>🔑</span> Redeem Code</button>
+    <button onclick="showPanel('hosting')" id="nav-hosting"><span>🌐</span> Upload HTML</button>
+    <button onclick="showPanel('benefits')" id="nav-benefits"><span>✅</span> Benefit</button>
+    <button onclick="showPanel('settings')" id="nav-settings"><span>⚙️</span> Pengaturan</button>
+    <button onclick="window.open('index.html','_blank')"><span>🏠</span> Lihat Website</button>
+  </nav>
+  <div class="aside-footer">
+    <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <div class="panel on" id="panel-dashboard">
+    <div class="page-head"><h1>Dashboard</h1><p>Selamat datang di panel admin YokotoFX Studio</p></div>
+    <div class="stat-cards" id="stat-cards">
+      <div class="stat-card"><div class="num">—</div><div class="lbl">Produk</div></div>
+      <div class="stat-card"><div class="num">—</div><div class="lbl">Kode Aktif</div></div>
+      <div class="stat-card"><div class="num">—</div><div class="lbl">File Hosted</div></div>
+      <div class="stat-card"><div class="num">—</div><div class="lbl">Benefit</div></div>
+    </div>
+    <div class="a-card">
+      <h3>Info Database</h3>
+      <p style="font-size:13px;color:var(--text2);">Database tersimpan di <strong style="color:var(--blue2);">GitHub Gist</strong>. Semua perubahan langsung sync ke Gist secara realtime.</p>
+      <p style="font-size:12px;color:var(--text3);margin-top:8px;">Gist ID: <span id="gist-id-display" style="color:var(--text2);font-family:'Orbitron',sans-serif;font-size:11px;">-</span></p>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="panel" id="panel-products">
+    <div class="page-head"><h1>Kelola Produk</h1><p>Tambah, edit, atau hapus produk di halaman utama</p></div>
+    <button class="btn-add" onclick="openProdModal()">+ Tambah Produk</button>
+    <div id="prod-list"></div>
+  </div>
+
+  <!-- CODES -->
+  <div class="panel" id="panel-codes">
+    <div class="page-head"><h1>Kelola Redeem Code</h1><p>Tambah atau hapus kode akses pengguna</p></div>
+    <button class="btn-add" onclick="openCodeModal()">+ Tambah Kode</button>
+    <div id="code-list"></div>
+  </div>
+
+  <!-- HOSTING -->
+  <div class="panel" id="panel-hosting">
+    <div class="page-head"><h1>Upload HTML Sementara</h1><p>File HTML di-hosting sementara dan terhapus otomatis saat expired</p></div>
+    <div class="a-card">
+      <h3>Upload File Baru</h3>
+      <div class="upload-zone" onclick="document.getElementById('file-inp').click()">
+        <div class="uz-icon">📂</div>
+        <p>Klik untuk pilih file HTML</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:4px;">Format: .html · Maks 4MB</p>
+      </div>
+      <input type="file" id="file-inp" accept=".html" style="display:none" onchange="handleFileUpload(this)">
+      <div id="file-preview" style="display:none;margin-top:14px;">
+        <div class="form-grid">
+          <div class="inp-g"><label>Nama File</label><input type="text" id="hosted-name" placeholder="nama-file.html"></div>
+          <div class="inp-g"><label>Durasi Aktif</label>
+            <select id="hosted-dur">
+              <option value="1">1 Hari</option><option value="7">7 Hari</option>
+              <option value="30" selected>30 Hari</option><option value="90">90 Hari</option><option value="365">1 Tahun</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-save" onclick="doUpload()">⬆ Upload & Hosting</button>
+      </div>
+    </div>
+    <div class="a-card">
+      <h3>File Aktif</h3>
+      <div id="hosted-list"><p style="color:var(--text2);font-size:13px;">Memuat...</p></div>
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="panel" id="panel-benefits">
+    <div class="page-head"><h1>Kelola Benefit</h1><p>Atur daftar keunggulan di halaman utama</p></div>
+    <button class="btn-add" onclick="openBenModal()">+ Tambah Benefit</button>
+    <div id="ben-list"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="panel-settings">
+    <div class="page-head"><h1>Pengaturan Website</h1><p>Ubah konfigurasi tampilan dan konten website</p></div>
+    <div class="a-card">
+      <h3>Informasi Utama</h3>
+      <div class="inp-g"><label>Nama Website</label><input type="text" id="s-name" placeholder="YokotoFX Studio"></div>
+      <div class="inp-g"><label>Username Telegram</label><input type="text" id="s-tg" placeholder="Yokoto_saiba"></div>
+      <div class="inp-g"><label>Hero Title</label><input type="text" id="s-htitle" placeholder="Solusi Digital Trading Terbaik"></div>
+      <div class="inp-g"><label>Hero Subtitle</label><textarea id="s-hsub" rows="3" placeholder="Deskripsi singkat website..."></textarea></div>
+      <button class="btn-save" id="btn-save-settings" onclick="saveSettings()">Simpan Pengaturan</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL PRODUK -->
+<div class="m-overlay" id="mProd">
+  <div class="modal">
+    <button class="m-close" onclick="closeM('mProd')">✕</button>
+    <h3 id="prod-modal-title">Tambah Produk</h3>
+    <input type="hidden" id="prod-edit-id">
+    <div class="form-grid">
+      <div class="inp-g"><label>Nama Produk</label><input type="text" id="p-name" placeholder="Web Analisis Trading"></div>
+      <div class="inp-g"><label>Icon/Emoji</label><input type="text" id="p-icon" placeholder="📊" maxlength="4"></div>
+    </div>
+    <div class="inp-g"><label>Deskripsi</label><textarea id="p-desc" rows="3" placeholder="Deskripsi produk..."></textarea></div>
+    <div class="form-grid">
+      <div class="inp-g"><label>Harga/Bulan (Rp)</label><input type="number" id="p-mo" placeholder="30000"></div>
+      <div class="inp-g"><label>Harga/Tahun (Rp)</label><input type="number" id="p-yr" placeholder="450000"></div>
+    </div>
+    <div class="form-grid">
+      <div class="inp-g"><label>Harga Asli/Tahun (Rp)</label><input type="number" id="p-ori" placeholder="600000"></div>
+      <div class="inp-g"><label>Status</label>
+        <select id="p-active"><option value="true">Aktif</option><option value="false">Nonaktif</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" id="btn-prod-save" onclick="saveProd()">Simpan</button>
+      <button class="btn-sm btn-del" style="padding:9px 16px;" onclick="closeM('mProd')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CODE -->
+<div class="m-overlay" id="mCode">
+  <div class="modal">
+    <button class="m-close" onclick="closeM('mCode')">✕</button>
+    <h3>Tambah Redeem Code</h3>
+    <div class="inp-g"><label>Kode</label><input type="text" id="c-code" placeholder="USER2024ABC"></div>
+    <div class="form-grid">
+      <div class="inp-g"><label>Role</label>
+        <select id="c-role"><option value="user">User</option><option value="admin">Admin</option></select>
+      </div>
+      <div class="inp-g"><label>Durasi</label>
+        <select id="c-exp">
+          <option value="0">Selamanya</option><option value="7">7 Hari</option>
+          <option value="30">30 Hari</option><option value="90">90 Hari</option><option value="365">1 Tahun</option>
+        </select>
+      </div>
+    </div>
+    <div class="inp-g" style="margin-bottom:0;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;">
+        <input type="checkbox" id="c-onetime"> Hanya bisa digunakan 1 kali
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" id="btn-code-save" onclick="saveCode()">Tambah Kode</button>
+      <button class="btn-sm btn-del" style="padding:9px 16px;" onclick="closeM('mCode')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BENEFIT -->
+<div class="m-overlay" id="mBen">
+  <div class="modal">
+    <button class="m-close" onclick="closeM('mBen')">✕</button>
+    <h3 id="ben-modal-title">Tambah Benefit</h3>
+    <input type="hidden" id="ben-edit-id">
+    <div class="form-grid">
+      <div class="inp-g"><label>Icon/Emoji</label><input type="text" id="b-icon" placeholder="✅" maxlength="4"></div>
+      <div class="inp-g"><label>Judul</label><input type="text" id="b-title" placeholder="Akses Instan"></div>
+    </div>
+    <div class="inp-g"><label>Deskripsi</label><input type="text" id="b-desc" placeholder="Langsung aktif setelah pembayaran"></div>
+    <div class="modal-actions">
+      <button class="btn-save" id="btn-ben-save" onclick="saveBen()">Simpan</button>
+      <button class="btn-sm btn-del" style="padding:9px 16px;" onclick="closeM('mBen')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="gist.js"></script>
+<script>
+let currentDB = null;
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload = async () => {
+  const sess = getSession();
+  if (!sess || !sess.logged_in || sess.role !== 'admin') {
+    window.location.href = 'index.html'; return;
+  }
+  const cfg = getCfg();
+  if (cfg.gist_id) {
+    document.getElementById('gist-id-display').textContent = cfg.gist_id.slice(0,8) + '...';
+  }
+  await refreshDB();
+};
+
+async function refreshDB() {
+  try {
+    currentDB = await gistRead();
+    renderDashboard();
+    renderProds();
+    renderCodes();
+    renderHosted();
+    renderBens();
+    loadSettingsForm();
+  } catch(e) {
+    showToast('Gagal load DB: ' + e.message, 'err');
+  }
+}
+
+async function writeDB(successMsg) {
+  setSaving(true);
+  try {
+    await gistWrite(currentDB);
+    showToast(successMsg || '✅ Disimpan!', 'ok');
+    renderDashboard();
+  } catch(e) {
+    showToast('❌ Gagal simpan: ' + e.message, 'err');
+  } finally {
+    setSaving(false);
+  }
+}
+
+function setSaving(on) {
+  document.getElementById('saving-bar').classList.toggle('on', on);
+}
+
+// ── PANEL ─────────────────────────────────────────────────────
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.aside-nav button').forEach(b => b.classList.remove('act'));
+  document.getElementById('panel-' + name).classList.add('on');
+  const nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('act');
+}
+
+function openM(id) { document.getElementById(id).classList.add('on'); }
+function closeM(id) { document.getElementById(id).classList.remove('on'); }
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDashboard() {
+  if (!currentDB) return;
+  const prods = (currentDB.products || []).length;
+  const codes = (currentDB.redeem_codes || []).filter(c => !c.used && !isExpired(c.expires_at)).length;
+  const now = new Date();
+  const hosted = (currentDB.hosted_files || []).filter(f => new Date(f.expires_at) > now).length;
+  const bens = (currentDB.benefits || []).length;
+  document.getElementById('stat-cards').innerHTML = [
+    {n:prods,l:'Total Produk'},{n:codes,l:'Kode Aktif'},{n:hosted,l:'File Hosted'},{n:bens,l:'Benefit'}
+  ].map(s => `<div class="stat-card"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join('');
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────
+function renderProds() {
+  const ps = currentDB.products || [];
+  const el = document.getElementById('prod-list');
+  if (!ps.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px;padding:14px;">Belum ada produk.</p>'; return; }
+  el.innerHTML = ps.map(p => `
+    <div class="list-item">
+      <div class="li-icon">${p.icon}</div>
+      <div class="li-info">
+        <div class="li-name">${p.name}</div>
+        <div class="li-sub">${p.desc}</div>
+        <div class="li-meta">Rp ${p.price_monthly.toLocaleString('id')}/bln · Rp ${p.price_yearly.toLocaleString('id')}/thn</div>
+      </div>
+      <span class="${p.active?'badge-on':'badge-off'}">${p.active?'AKTIF':'OFF'}</span>
+      <div class="li-actions">
+        <button class="btn-sm btn-edit" onclick="editProd('${p.id}')">Edit</button>
+        <button class="btn-sm btn-del" onclick="delProd('${p.id}')">Hapus</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openProdModal() {
+  document.getElementById('prod-edit-id').value = '';
+  document.getElementById('prod-modal-title').textContent = 'Tambah Produk';
+  ['p-name','p-icon','p-desc','p-mo','p-yr','p-ori'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('p-active').value = 'true';
+  openM('mProd');
+}
+
+function editProd(id) {
+  const p = currentDB.products.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('prod-edit-id').value = id;
+  document.getElementById('prod-modal-title').textContent = 'Edit Produk';
+  document.getElementById('p-name').value = p.name;
+  document.getElementById('p-icon').value = p.icon;
+  document.getElementById('p-desc').value = p.desc;
+  document.getElementById('p-mo').value = p.price_monthly;
+  document.getElementById('p-yr').value = p.price_yearly;
+  document.getElementById('p-ori').value = p.price_yearly_original;
+  document.getElementById('p-active').value = String(p.active);
+  openM('mProd');
+}
+
+async function saveProd() {
+  const editId = document.getElementById('prod-edit-id').value;
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) { showToast('Nama produk wajib diisi','err'); return; }
+  const prod = {
+    id: editId || uid(),
+    name,
+    icon: document.getElementById('p-icon').value.trim() || '📦',
+    desc: document.getElementById('p-desc').value.trim(),
+    price_monthly: parseInt(document.getElementById('p-mo').value) || 30000,
+    price_yearly: parseInt(document.getElementById('p-yr').value) || 450000,
+    price_yearly_original: parseInt(document.getElementById('p-ori').value) || 600000,
+    active: document.getElementById('p-active').value === 'true'
+  };
+  if (!currentDB.products) currentDB.products = [];
+  if (editId) { const i = currentDB.products.findIndex(p => p.id === editId); if (i > -1) currentDB.products[i] = prod; }
+  else currentDB.products.push(prod);
+  closeM('mProd');
+  renderProds();
+  await writeDB('✅ Produk berhasil disimpan ke Gist');
+}
+
+async function delProd(id) {
+  if (!confirm('Hapus produk ini dari Gist?')) return;
+  currentDB.products = currentDB.products.filter(p => p.id !== id);
+  renderProds();
+  await writeDB('🗑 Produk dihapus');
+}
+
+// ── CODES ─────────────────────────────────────────────────────
+function renderCodes() {
+  const cs = currentDB.redeem_codes || [];
+  const el = document.getElementById('code-list');
+  if (!cs.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px;padding:14px;">Belum ada kode.</p>'; return; }
+  el.innerHTML = cs.map((c, i) => {
+    const expired = isExpired(c.expires_at);
+    return `
+    <div class="list-item">
+      <div class="li-info">
+        <div class="li-name" style="font-family:'Orbitron',sans-serif;font-size:12px;">${c.code}</div>
+        <div class="li-sub">Dibuat: ${new Date(c.created_at).toLocaleDateString('id')} · ${c.one_time?'Sekali pakai':'Multi pakai'}</div>
+        <div class="li-meta">Exp: ${c.expires_at ? new Date(c.expires_at).toLocaleDateString('id') : '∞ Selamanya'}</div>
+      </div>
+      <span class="badge-${c.role==='admin'?'admin':'user'}">${c.role.toUpperCase()}</span>
+      ${c.used ? '<span class="badge-exp">USED</span>' : ''}
+      ${expired && !c.used ? '<span class="badge-exp">EXPIRED</span>' : ''}
+      <div class="li-actions">
+        <button class="btn-sm btn-del" onclick="delCode(${i})" ${c.code==='admin yokotofxownerfynixorstudio'?'disabled title="Kode admin utama"':''}>Hapus</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openCodeModal() {
+  document.getElementById('c-code').value = '';
+  document.getElementById('c-role').value = 'user';
+  document.getElementById('c-exp').value = '30';
+  document.getElementById('c-onetime').checked = false;
+  openM('mCode');
+}
+
+async function saveCode() {
+  const code = document.getElementById('c-code').value.trim();
+  if (!code) { showToast('Kode wajib diisi','err'); return; }
+  if ((currentDB.redeem_codes || []).find(c => c.code === code)) { showToast('Kode sudah ada','err'); return; }
+  const days = parseInt(document.getElementById('c-exp').value) || 0;
+  if (!currentDB.redeem_codes) currentDB.redeem_codes = [];
+  currentDB.redeem_codes.push({
+    code,
+    role: document.getElementById('c-role').value,
+    used: false,
+    created_at: new Date().toISOString(),
+    expires_at: days > 0 ? daysFromNow(days) : null,
+    one_time: document.getElementById('c-onetime').checked
+  });
+  closeM('mCode');
+  renderCodes();
+  await writeDB('✅ Kode berhasil ditambahkan ke Gist');
+}
+
+async function delCode(i) {
+  if (!confirm('Hapus kode ini dari Gist?')) return;
+  currentDB.redeem_codes.splice(i, 1);
+  renderCodes();
+  await writeDB('🗑 Kode dihapus');
+}
+
+// ── HOSTING ───────────────────────────────────────────────────
+let uploadedContent = '';
+
+function handleFileUpload(inp) {
+  const file = inp.files[0];
+  if (!file) return;
+  if (file.size > 4 * 1024 * 1024) { showToast('File terlalu besar (maks 4MB)','err'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    uploadedContent = e.target.result;
+    document.getElementById('hosted-name').value = file.name;
+    document.getElementById('file-preview').style.display = 'block';
+  };
+  reader.readAsText(file);
+}
+
+async function doUpload() {
+  if (!uploadedContent) { showToast('Pilih file terlebih dahulu','err'); return; }
+  const name = document.getElementById('hosted-name').value.trim() || 'file.html';
+  const days = parseInt(document.getElementById('hosted-dur').value) || 30;
+  if (!currentDB.hosted_files) currentDB.hosted_files = [];
+  currentDB.hosted_files.push({
+    id: uid(),
+    filename: name,
+    content: uploadedContent,
+    created_at: new Date().toISOString(),
+    expires_at: daysFromNow(days)
+  });
+  uploadedContent = '';
+  document.getElementById('file-inp').value = '';
+  document.getElementById('file-preview').style.display = 'none';
+  renderHosted();
+  await writeDB('✅ File berhasil di-upload ke Gist');
+}
+
+function renderHosted() {
+  if (!currentDB) return;
+  const now = new Date();
+  // Auto-clean expired
+  const before = (currentDB.hosted_files || []).length;
+  currentDB.hosted_files = (currentDB.hosted_files || []).filter(f => new Date(f.expires_at) > now);
+  const el = document.getElementById('hosted-list');
+  if (!currentDB.hosted_files.length) {
+    el.innerHTML = '<p style="color:var(--text2);font-size:13px;">Belum ada file aktif.</p>';
+    return;
+  }
+  const base = window.location.href.replace('admin.html','');
+  el.innerHTML = currentDB.hosted_files.map(f => {
+    const rem = Math.ceil((new Date(f.expires_at) - now) / 86400000);
+    const cls = rem > 14 ? 'badge-ok' : 'badge-warn';
+    const link = `${base}viewer.html#${f.id}`;
+    return `
+    <div class="list-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <span style="font-size:20px;">📄</span>
+        <div style="flex:1;min-width:0;">
+          <div class="li-name">${f.filename}</div>
+          <div class="li-sub">Exp: ${new Date(f.expires_at).toLocaleDateString('id')}</div>
+        </div>
+        <span class="${cls}">-${rem} hari</span>
+        <button class="btn-sm btn-del" onclick="delHosted('${f.id}')">Hapus</button>
+      </div>
+      <a href="${link}" target="_blank" class="hosted-link">🔗 ${link}</a>
+    </div>`;
+  }).join('');
+}
+
+async function delHosted(id) {
+  if (!confirm('Hapus file ini dari Gist?')) return;
+  currentDB.hosted_files = currentDB.hosted_files.filter(f => f.id !== id);
+  renderHosted();
+  await writeDB('🗑 File dihapus');
+}
+
+// ── BENEFITS ──────────────────────────────────────────────────
+function renderBens() {
+  const bs = currentDB.benefits || [];
+  const el = document.getElementById('ben-list');
+  if (!bs.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px;padding:14px;">Belum ada benefit.</p>'; return; }
+  el.innerHTML = bs.map(b => `
+    <div class="list-item">
+      <div class="li-icon">${b.icon}</div>
+      <div class="li-info"><div class="li-name">${b.title}</div><div class="li-sub">${b.desc}</div></div>
+      <div class="li-actions">
+        <button class="btn-sm btn-edit" onclick="editBen('${b.id}')">Edit</button>
+        <button class="btn-sm btn-del" onclick="delBen('${b.id}')">Hapus</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openBenModal() {
+  document.getElementById('ben-edit-id').value = '';
+  document.getElementById('ben-modal-title').textContent = 'Tambah Benefit';
+  ['b-icon','b-title','b-desc'].forEach(id => document.getElementById(id).value = '');
+  openM('mBen');
+}
+
+function editBen(id) {
+  const b = currentDB.benefits.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('ben-edit-id').value = id;
+  document.getElementById('ben-modal-title').textContent = 'Edit Benefit';
+  document.getElementById('b-icon').value = b.icon;
+  document.getElementById('b-title').value = b.title;
+  document.getElementById('b-desc').value = b.desc;
+  openM('mBen');
+}
+
+async function saveBen() {
+  const editId = document.getElementById('ben-edit-id').value;
+  const title = document.getElementById('b-title').value.trim();
+  if (!title) { showToast('Judul wajib diisi','err'); return; }
+  const ben = { id: editId || uid(), icon: document.getElementById('b-icon').value.trim() || '✅', title, desc: document.getElementById('b-desc').value.trim() };
+  if (!currentDB.benefits) currentDB.benefits = [];
+  if (editId) { const i = currentDB.benefits.findIndex(b => b.id === editId); if (i > -1) currentDB.benefits[i] = ben; }
+  else currentDB.benefits.push(ben);
+  closeM('mBen');
+  renderBens();
+  await writeDB('✅ Benefit disimpan ke Gist');
+}
+
+async function delBen(id) {
+  if (!confirm('Hapus benefit ini?')) return;
+  currentDB.benefits = currentDB.benefits.filter(b => b.id !== id);
+  renderBens();
+  await writeDB('🗑 Benefit dihapus');
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function loadSettingsForm() {
+  const s = currentDB.site_settings || {};
+  document.getElementById('s-name').value = s.name || '';
+  document.getElementById('s-tg').value = s.telegram || '';
+  document.getElementById('s-htitle').value = s.hero_title || '';
+  document.getElementById('s-hsub').value = s.hero_sub || '';
+}
+
+async function saveSettings() {
+  currentDB.site_settings = {
+    name: document.getElementById('s-name').value.trim() || 'YokotoFX Studio',
+    telegram: document.getElementById('s-tg').value.trim() || 'Yokoto_saiba',
+    hero_title: document.getElementById('s-htitle').value.trim(),
+    hero_sub: document.getElementById('s-hsub').value.trim(),
+    accent_color: currentDB.site_settings?.accent_color || '#2480e8'
+  };
+  await writeDB('✅ Pengaturan disimpan ke Gist');
+}
+
+// ── LOGOUT ───────────────────────────────────────────────────
+function doLogout() { clearSession(); window.location.href = 'index.html'; }
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.className = 'toast', 3500);
+}
+</script>
+</body>
+</html>

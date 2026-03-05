@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Viewer — YokotoFX Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--bg2:#080810;--bg3:#0d0d18;--border:#162040;--blue:#1a6cc8;--blue2:#2480e8;--blue3:#0d4a94;--text:#fff;--text2:#a0b0c8;--text3:#50607a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:48px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;z-index:10;}
+.tb-left{display:flex;align-items:center;gap:12px;}
+.tb-logo{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--text2);text-decoration:none;}
+.tb-logo em{font-style:normal;color:var(--blue2);}
+.file-badge{padding:3px 10px;background:rgba(36,128,232,.12);border:1px solid var(--blue3);border-radius:12px;font-size:10px;font-weight:700;color:var(--blue2);letter-spacing:1px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.exp-info{font-size:11px;color:var(--text3);}
+.exp-info span{color:var(--text2);}
+.btn-back{background:var(--bg3);color:var(--text2);border:1px solid var(--border);padding:5px 12px;border-radius:5px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;text-decoration:none;transition:all .2s;}
+.btn-back:hover{border-color:var(--blue2);color:#fff;}
+#viewer-frame{flex:1;border:none;width:100%;display:none;}
+.state{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px;}
+.sbox{max-width:380px;}
+.sbox .si{font-size:52px;margin-bottom:18px;}
+.sbox h2{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px;}
+.sbox p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px;}
+.btn-home{background:var(--blue3);color:#fff;border:1px solid var(--blue2);padding:11px 22px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-decoration:none;display:inline-block;transition:background .2s;}
+.btn-home:hover{background:var(--blue2);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="tb-left">
+    <a href="index.html" class="tb-logo">Yokoto<em>FX</em></a>
+    <div class="file-badge" id="file-badge">Memuat...</div>
+  </div>
+  <div class="tb-right">
+    <div class="exp-info" id="exp-info" style="display:none">⏱ Berakhir: <span id="exp-text"></span></div>
+    <a href="index.html" class="btn-back">← Beranda</a>
+  </div>
+</div>
+<iframe id="viewer-frame"></iframe>
+<div class="state" id="state-load" style="display:flex;">
+  <div class="sbox"><div class="si">⏳</div><h2>Memuat File...</h2><p>Mengambil konten dari GitHub Gist...</p></div>
+</div>
+<div class="state" id="state-notfound" style="display:none;">
+  <div class="sbox"><div class="si">🔍</div><h2>File Tidak Ditemukan</h2><p>File ini tidak tersedia. ID tidak valid, sudah dihapus admin, atau sudah kadaluarsa.</p><a href="index.html" class="btn-home">Kembali ke Beranda</a></div>
+</div>
+<div class="state" id="state-expired" style="display:none;">
+  <div class="sbox"><div class="si">⌛</div><h2>File Sudah Kadaluarsa</h2><p>Waktu hosting file ini telah berakhir dan kontennya terhapus otomatis.</p><a href="index.html" class="btn-home">Kembali ke Beranda</a></div>
+</div>
+<div class="state" id="state-nosetup" style="display:none;">
+  <div class="sbox"><div class="si">⚙️</div><h2>Database Belum Setup</h2><p>Hubungi admin untuk mengkonfigurasi database terlebih dahulu.</p><a href="index.html" class="btn-home">Kembali ke Beranda</a></div>
+</div>
+<script src="gist.js"></script>
+<script>
+function show(id){
+  ['state-load','state-notfound','state-expired','state-nosetup'].forEach(s=>document.getElementById(s).style.display='none');
+  document.getElementById('viewer-frame').style.display='none';
+  if(id==='frame'){document.getElementById('viewer-frame').style.display='block';}
+  else{document.getElementById(id).style.display='flex';}
+}
+window.onload=async()=>{
+  const hash=window.location.hash.replace('#','');
+  if(!hash){show('state-notfound');document.getElementById('file-badge').textContent='Tidak ada ID';return;}
+  if(!isSetup()){show('state-nosetup');return;}
+  try{
+    const db=await gistRead();
+    const now=new Date();
+    // Auto-clean expired (tidak write karena viewer bukan admin)
+    const file=(db.hosted_files||[]).find(f=>f.id===hash);
+    if(!file){show('state-notfound');document.getElementById('file-badge').textContent='File tidak ditemukan';return;}
+    if(new Date(file.expires_at)<=now){show('state-expired');document.getElementById('file-badge').textContent=file.filename;return;}
+    // Render
+    document.getElementById('file-badge').textContent='📄 '+file.filename;
+    const rem=Math.ceil((new Date(file.expires_at)-now)/86400000);
+    const ei=document.getElementById('exp-info');ei.style.display='flex';
+    document.getElementById('exp-text').textContent=new Date(file.expires_at).toLocaleDateString('id')+' ('+rem+' hari lagi)';
+    const blob=new Blob([file.content],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const frame=document.getElementById('viewer-frame');
+    frame.src=url;
+    show('frame');
+  }catch(e){
+    document.getElementById('file-badge').textContent='Error: '+e.message;
+    show('state-notfound');
+  }
+};
+window.addEventListener('hashchange',()=>window.location.reload());
+</script>
+</body>
+</html>

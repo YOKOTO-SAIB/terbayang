@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YokotoFX Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--bg2:#080810;--bg3:#0d0d18;--card:#0a0a16;--border:#162040;--blue:#1a6cc8;--blue2:#2480e8;--blue3:#0d4a94;--text:#fff;--text2:#a0b0c8;--text3:#50607a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--blue3);}
+
+/* NAV */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:62px;background:rgba(0,0,0,.96);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);}
+.nav-left{display:flex;align-items:center;gap:14px;}
+.hamburger{background:none;border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s;}
+.hamburger:hover{border-color:var(--blue2);}
+.hamburger span{display:block;width:17px;height:2px;background:var(--text);border-radius:2px;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);}
+.logo-box{width:36px;height:36px;background:var(--blue3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-weight:900;font-size:15px;border:1px solid var(--blue2);}
+.logo-name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;}
+.logo-name em{font-style:normal;color:var(--blue2);}
+.nav-btn{background:var(--blue3);color:#fff;border:1px solid var(--blue2);padding:8px 18px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;transition:background .2s;}
+.nav-btn:hover{background:var(--blue2);}
+
+/* SETUP BANNER — GEDE & MENCOLOK */
+.setup-banner{
+  display:none;
+  margin-top:62px;
+  background:#1a3a6a;
+  border-bottom:2px solid var(--blue2);
+  padding:16px 24px;
+  text-align:center;
+}
+.setup-banner p{font-size:15px;font-weight:600;color:#fff;margin-bottom:10px;}
+.setup-banner p span{color:#7bc8ff;}
+.btn-setup-open{
+  display:inline-block;
+  background:var(--blue2);color:#fff;
+  border:none;padding:10px 28px;border-radius:7px;
+  cursor:pointer;font-family:'Rajdhani',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:1px;
+  transition:background .2s;
+}
+.btn-setup-open:hover{background:#1a5caa;}
+
+/* SIDEBAR */
+.s-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1100;display:none;}
+.s-overlay.on{display:block;}
+.sidebar{position:fixed;top:0;left:-270px;bottom:0;width:270px;background:var(--bg2);border-right:1px solid var(--border);z-index:1101;transition:left .28s ease;}
+.sidebar.on{left:0;}
+.sb-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+.sb-head span{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--text2);}
+.sb-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;}
+.sb-close:hover{color:#fff;}
+.sb-nav a{display:block;padding:13px 22px;color:var(--text2);text-decoration:none;font-size:15px;font-weight:500;border-left:3px solid transparent;transition:all .18s;}
+.sb-nav a:hover{color:#fff;background:rgba(36,128,232,.07);border-left-color:var(--blue2);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px 64px;position:relative;background:radial-gradient(ellipse 75% 55% at 50% 40%,#081830 0%,var(--bg) 68%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:56px 56px;opacity:.28;}
+.hero-inner{position:relative;z-index:1;max-width:680px;}
+.badge{display:inline-block;padding:5px 16px;background:rgba(36,128,232,.1);border:1px solid var(--blue3);border-radius:20px;font-size:11px;font-weight:700;color:var(--blue2);letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;}
+.hero h1{font-family:'Orbitron',sans-serif;font-size:clamp(26px,5vw,52px);font-weight:900;line-height:1.15;margin-bottom:18px;}
+.hero h1 em{font-style:normal;color:var(--blue2);}
+.hero p{font-size:17px;color:var(--text2);max-width:500px;margin:0 auto 34px;line-height:1.7;}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-p{background:var(--blue2);color:#fff;border:none;padding:13px 30px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;transition:background .2s;}
+.btn-p:hover{background:var(--blue3);}
+.btn-s{background:transparent;color:var(--text2);border:1px solid var(--border);padding:13px 30px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;letter-spacing:1px;transition:all .2s;}
+.btn-s:hover{border-color:var(--blue2);color:#fff;}
+
+/* STATS */
+.stats{display:flex;justify-content:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2);}
+.st{flex:1;max-width:200px;text-align:center;padding:22px 12px;border-right:1px solid var(--border);}
+.st:last-child{border-right:none;}
+.st-n{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:var(--blue2);}
+.st-l{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+
+/* SECTIONS */
+.sec{padding:76px 24px;}
+.sec-alt{background:var(--bg2);}
+.wrap{max-width:1080px;margin:0 auto;}
+.sec-head{text-align:center;margin-bottom:50px;}
+.sec-head h2{font-family:'Orbitron',sans-serif;font-size:clamp(20px,3.5vw,32px);font-weight:700;margin-bottom:10px;}
+.sec-head h2 em{font-style:normal;color:var(--blue2);}
+.sec-head p{color:var(--text2);font-size:15px;max-width:500px;margin:0 auto;}
+.div-line{width:44px;height:3px;background:var(--blue2);margin:14px auto 0;border-radius:2px;}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,#1e2a40 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:12px;height:240px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* PRODUCT GRID */
+.p-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px;display:flex;flex-direction:column;gap:14px;transition:border-color .25s,transform .25s;position:relative;overflow:hidden;}
+.p-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue2);opacity:0;transition:opacity .3s;}
+.p-card:hover{border-color:var(--blue2);transform:translateY(-5px);}
+.p-card:hover::after{opacity:1;}
+.c-icon{font-size:34px;}.c-name{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;}
+.c-desc{color:var(--text2);font-size:13px;line-height:1.6;flex:1;}
+.c-price{display:flex;align-items:baseline;gap:7px;padding-top:10px;border-top:1px solid var(--border);}
+.cp-from{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.cp-val{font-family:'Orbitron',sans-serif;font-size:19px;font-weight:700;color:var(--blue2);}
+.cp-per{font-size:11px;color:var(--text3);}
+.btn-buy{background:var(--blue3);color:#fff;border:1px solid var(--blue2);padding:11px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:background .2s;width:100%;}
+.btn-buy:hover{background:var(--blue2);}
+
+/* BENEFIT */
+.b-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;}
+.b-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;display:flex;align-items:flex-start;gap:13px;transition:border-color .2s;}
+.b-item:hover{border-color:var(--blue3);}
+.b-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.b-txt h4{font-size:15px;font-weight:700;margin-bottom:3px;}
+.b-txt p{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--border);background:var(--bg2);padding:36px 24px;text-align:center;}
+.f-name{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;}
+.f-name em{font-style:normal;color:var(--blue2);}
+.f-links{display:flex;justify-content:center;gap:22px;margin:14px 0;}
+.f-links a{color:var(--text2);text-decoration:none;font-size:13px;transition:color .2s;}
+.f-links a:hover{color:var(--blue2);}
+.f-copy{color:var(--text3);font-size:12px;}
+
+/* MODALS */
+.m-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px;}
+.m-overlay.on{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:460px;padding:28px;position:relative;max-height:92vh;overflow-y:auto;}
+.modal h3{font-family:'Orbitron',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;}
+.modal .sub{color:var(--text2);font-size:13px;margin-bottom:20px;}
+.m-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;}
+.m-close:hover{color:#fff;}
+
+/* PACKAGE */
+.pkgs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.pkg{border:1px solid var(--border);border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--card);}
+.pkg:hover,.pkg.sel{border-color:var(--blue2);background:rgba(36,128,232,.07);}
+.pkg-badge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--blue2);color:#fff;font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;white-space:nowrap;}
+.pkg-n{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+.pkg-p{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;color:var(--blue2);}
+.pkg-ori{font-size:11px;color:var(--text3);text-decoration:line-through;margin-top:2px;}
+.pkg-dis{font-size:10px;color:#3a9;font-weight:700;margin-top:2px;}
+
+/* INPUTS */
+.inp-g{margin-bottom:12px;}
+.inp-g label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase;}
+.inp-g input,.inp-g textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:#fff;padding:11px 13px;font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:border-color .2s;}
+.inp-g input:focus,.inp-g textarea:focus{border-color:var(--blue2);}
+.inp-err{color:#c04040;font-size:12px;margin-top:5px;display:none;}
+
+/* SETUP STEPS */
+.step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.step-num{width:24px;height:24px;min-width:24px;border-radius:50%;background:var(--blue3);border:1px solid var(--blue2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;}
+.step-txt{font-size:13px;color:var(--text2);line-height:1.6;}
+.step-txt a{color:var(--blue2);text-decoration:none;}
+.step-txt strong{color:#fff;}
+.sep-line{border:none;border-top:1px solid var(--border);margin:16px 0;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+.btn-c{width:100%;background:var(--blue2);color:#fff;border:none;padding:13px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;transition:background .2s;margin-top:4px;}
+.btn-c:hover{background:var(--blue3);}
+.btn-c:disabled{background:var(--text3);cursor:not-allowed;}
+.btn-c-sec{width:100%;background:var(--bg3);color:var(--text2);border:1px solid var(--border);padding:10px;border-radius:7px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;transition:all .2s;margin-top:6px;}
+.btn-c-sec:hover{border-color:var(--blue2);color:#fff;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:13px 18px;font-size:14px;font-weight:600;transform:translateY(70px);opacity:0;transition:all .28s;pointer-events:none;max-width:300px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:var(--blue2);}
+.toast.err{border-color:#c04040;}
+
+@keyframes fu{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fu .5s ease forwards;opacity:0;}
+.d1{animation-delay:.1s;}.d2{animation-delay:.2s;}.d3{animation-delay:.3s;}
+
+@media(max-width:580px){
+  .navbar{padding:0 14px;}
+  .pkgs{grid-template-columns:1fr;}
+  .stats{flex-wrap:wrap;}
+  .st{flex:0 0 50%;border-right:none;border-bottom:1px solid var(--border);}
+  .two-col{grid-template-columns:1fr;}
+  .hero{padding-top:70px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <button class="hamburger" onclick="openSB()"><span></span><span></span><span></span></button>
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">Y</div>
+      <div class="logo-name" id="nav-name">Yokoto<em>FX</em></div>
+    </a>
+  </div>
+  <button class="nav-btn" id="nav-login-btn" onclick="openRedeemModal()">🔑 LOGIN</button>
+</nav>
+
+<!-- SETUP BANNER -->
+<div class="setup-banner" id="setup-banner">
+  <p>⚠️ <strong>Database belum terhubung.</strong> <span>Klik tombol di bawah untuk setup GitHub Gist sebagai database.</span></p>
+  <button class="btn-setup-open" onclick="openM('mSetup')">⚙️ Setup Database Sekarang</button>
+</div>
+
+<!-- SIDEBAR -->
+<div class="s-overlay" id="sOverlay" onclick="closeSB()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sb-head"><span>NAVIGASI</span><button class="sb-close" onclick="closeSB()">✕</button></div>
+  <div class="sb-nav">
+    <a href="index.html">🏠 Beranda</a>
+    <a href="products.html">📦 Semua Produk</a>
+    <a href="#benefits" onclick="closeSB()">✅ Keunggulan</a>
+    <a href="redeem.html">🔑 Redeem Code</a>
+    <a href="https://t.me/Yokoto_saiba" target="_blank">💬 Telegram</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero-sec">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="badge fu">🚀 PLATFORM DIGITAL TRADING</div>
+    <h1 class="fu d1" id="hero-title">Solusi Digital <em>Trading</em> Terbaik</h1>
+    <p class="fu d2" id="hero-sub">Tools premium untuk trader profesional.</p>
+    <div class="cta-row fu d3">
+      <button class="btn-p" onclick="document.getElementById('products-sec').scrollIntoView({behavior:'smooth'})">Lihat Produk</button>
+      <button class="btn-s" id="tg-btn">Hubungi Kami</button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="st"><div class="st-n">500+</div><div class="st-l">Pengguna Aktif</div></div>
+  <div class="st"><div class="st-n">10+</div><div class="st-l">Produk Digital</div></div>
+  <div class="st"><div class="st-n">24/7</div><div class="st-l">Support</div></div>
+  <div class="st"><div class="st-n">99%</div><div class="st-l">Kepuasan</div></div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="sec" id="products-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Produk <em>Kami</em></h2>
+      <div class="div-line"></div>
+      <p>Pilih produk digital berkualitas untuk menunjang aktivitas trading Anda</p>
+    </div>
+    <div class="p-grid" id="p-grid">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="sec sec-alt" id="benefits">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Kenapa Pilih <em>Kami?</em></h2>
+      <div class="div-line"></div>
+      <p>Keunggulan yang membuat kami berbeda</p>
+    </div>
+    <div class="b-grid" id="b-grid">
+      <div class="skeleton" style="height:90px;"></div>
+      <div class="skeleton" style="height:90px;"></div>
+      <div class="skeleton" style="height:90px;"></div>
+      <div class="skeleton" style="height:90px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="f-name" id="f-name">Yokoto<em>FX</em> Studio</div>
+  <div class="f-links">
+    <a href="index.html">Beranda</a>
+    <a href="products.html">Produk</a>
+    <a href="redeem.html">Redeem</a>
+    <a href="https://t.me/Yokoto_saiba" target="_blank">Telegram</a>
+  </div>
+  <div class="f-copy">© 2025 YokotoFX Studio. All rights reserved.</div>
+</footer>
+
+<!-- MODAL SETUP -->
+<div class="m-overlay" id="mSetup">
+  <div class="modal">
+    <button class="m-close" onclick="closeM('mSetup')">✕</button>
+    <h3>⚙️ Setup GitHub Gist</h3>
+    <p class="sub">Ikuti 2 langkah ini untuk menghubungkan database</p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-txt">Buka <a href="https://github.com/settings/tokens/new" target="_blank"><strong>github.com/settings/tokens/new</strong></a> → buat token baru → centang scope <strong>gist</strong> saja → copy token.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-txt">Paste token di bawah lalu klik <strong>Setup Otomatis</strong>. Gist baru akan dibuat secara otomatis.</div>
+    </div>
+    <div class="inp-g" style="margin-top:8px;">
+      <label>GitHub Personal Access Token</label>
+      <input type="text" id="setup-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+    </div>
+    <div class="inp-err" id="setup-err" style="display:block;display:none;"></div>
+    <button class="btn-c" id="setup-btn" onclick="doSetup()">🚀 Setup Otomatis</button>
+
+    <hr class="sep-line">
+    <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Sudah punya Gist ID? Isi manual:</p>
+    <div class="two-col">
+      <div class="inp-g" style="margin:0;"><label>Gist ID</label><input type="text" id="manual-gist" placeholder="abc123..."></div>
+      <div class="inp-g" style="margin:0;"><label>Token</label><input type="text" id="manual-token" placeholder="ghp_..."></div>
+    </div>
+    <button class="btn-c-sec" onclick="doManualSetup()">Sambungkan Manual</button>
+  </div>
+</div>
+
+<!-- MODAL PACKAGE -->
+<div class="m-overlay" id="mPkg">
+  <div class="modal">
+    <button class="m-close" onclick="closeM('mPkg')">✕</button>
+    <h3 id="pkg-title">Pilih Paket</h3>
+    <p class="sub">Pilih durasi langganan yang sesuai kebutuhan Anda</p>
+    <div class="pkgs">
+      <div class="pkg" id="pkg-mo" onclick="selPkg('mo')">
+        <div class="pkg-n">1 Bulan</div>
+        <div class="pkg-p" id="pkg-mo-p">Rp 30K</div>
+        <div class="pkg-dis">Mulai dari sini</div>
+      </div>
+      <div class="pkg" id="pkg-yr" onclick="selPkg('yr')">
+        <div class="pkg-badge">HEMAT 25%</div>
+        <div class="pkg-n">1 Tahun</div>
+        <div class="pkg-p" id="pkg-yr-p">Rp 450K</div>
+        <div class="pkg-ori" id="pkg-yr-ori">Rp 600K</div>
+        <div class="pkg-dis" id="pkg-yr-save">Hemat Rp 150K</div>
+      </div>
+    </div>
+    <button class="btn-c" id="btn-c" onclick="doBuy()" disabled>— Pilih Paket Dulu —</button>
+  </div>
+</div>
+
+<!-- MODAL REDEEM -->
+<div class="m-overlay" id="mRedeem">
+  <div class="modal">
+    <button class="m-close" onclick="closeM('mRedeem')">✕</button>
+    <h3>🔑 Redeem Code</h3>
+    <p class="sub">Masukkan kode untuk mengakses fitur eksklusif</p>
+    <div class="inp-g">
+      <label>Kode Akses</label>
+      <input type="password" id="r-inp" placeholder="Masukkan kode..." onkeydown="if(event.key==='Enter')doRedeem()">
+      <div class="inp-err" id="r-err"></div>
+    </div>
+    <button class="btn-c" id="r-btn" onclick="doRedeem()">Masukkan Kode</button>
+    <p style="margin-top:12px;text-align:center;font-size:12px;color:var(--text3)">Atau <a href="redeem.html" style="color:var(--blue2);text-decoration:none;">buka halaman redeem</a></p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+//  GIST DB LAYER (inline)
+// ============================================================
+const GIST_CFG_KEY='yfx_gist_cfg';
+const SESSION_KEY='yfx_session';
+const CACHE_KEY='yfx_db_cache';
+const CACHE_TTL=30000;
+
+function getCfg(){const r=localStorage.getItem(GIST_CFG_KEY);return r?JSON.parse(r):{gist_id:'',token:'',setup_done:false};}
+function saveCfg(c){localStorage.setItem(GIST_CFG_KEY,JSON.stringify(c));}
+function isSetup(){const c=getCfg();return!!(c.setup_done&&c.gist_id&&c.token);}
+function getSession(){const r=sessionStorage.getItem(SESSION_KEY);return r?JSON.parse(r):null;}
+function setSession(d){sessionStorage.setItem(SESSION_KEY,JSON.stringify(d));}
+function clearSession(){sessionStorage.removeItem(SESSION_KEY);}
+function isExpired(iso){if(!iso)return false;return new Date()>new Date(iso);}
+function uid(){return'id'+Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function daysFromNow(d){return new Date(Date.now()+d*86400000).toISOString();}
+
+async function gistRead(){
+  try{
+    const cached=localStorage.getItem(CACHE_KEY);
+    if(cached){const{ts,data}=JSON.parse(cached);if(Date.now()-ts<CACHE_TTL)return JSON.parse(JSON.stringify(data));}
+  }catch(e){}
+  const cfg=getCfg();
+  const res=await fetch('https://api.github.com/gists/'+cfg.gist_id,{
+    headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+  });
+  if(!res.ok)throw new Error('Gist read gagal: '+res.status);
+  const gist=await res.json();
+  const raw=gist.files&&gist.files['db.json']&&gist.files['db.json'].content;
+  if(!raw)throw new Error('db.json tidak ada di Gist');
+  const data=JSON.parse(raw);
+  try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data}));}catch(e){}
+  return data;
+}
+
+async function gistWrite(data){
+  const cfg=getCfg();
+  try{localStorage.removeItem(CACHE_KEY);}catch(e){}
+  const res=await fetch('https://api.github.com/gists/'+cfg.gist_id,{
+    method:'PATCH',
+    headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify({files:{'db.json':{content:JSON.stringify(data,null,2)}}})
+  });
+  if(!res.ok)throw new Error('Gist write gagal: '+res.status);
+  return true;
+}
+
+const DEFAULT_DB={
+  site_settings:{name:'YokotoFX Studio',telegram:'Yokoto_saiba',hero_title:'Solusi Digital Trading Terbaik',hero_sub:'Tools premium untuk trader profesional. Akses alat analisis canggih dengan harga yang sangat terjangkau.',accent_color:'#2480e8'},
+  products:[
+    {id:'p1',name:'Web Analisis Trading',desc:'Platform analisis trading canggih dengan berbagai indikator teknikal dan fundamental realtime.',icon:'📊',active:true,price_monthly:30000,price_yearly:450000,price_yearly_original:600000},
+    {id:'p2',name:'Signal Bot Trading',desc:'Bot sinyal trading otomatis berbasis AI untuk membantu keputusan entry dan exit terbaik.',icon:'🤖',active:true,price_monthly:30000,price_yearly:450000,price_yearly_original:600000},
+    {id:'p3',name:'Dashboard Portofolio',desc:'Monitor seluruh aset dan performa trading Anda dalam satu dashboard yang intuitif.',icon:'📈',active:true,price_monthly:30000,price_yearly:450000,price_yearly_original:600000}
+  ],
+  benefits:[
+    {id:'b1',icon:'✅',title:'Akses Instan',desc:'Langsung aktif setelah pembayaran dikonfirmasi'},
+    {id:'b2',icon:'🔄',title:'Update Otomatis',desc:'Selalu dapat versi terbaru tanpa biaya tambahan'},
+    {id:'b3',icon:'💬',title:'Support 24/7',desc:'Tim support siap membantu via Telegram kapan saja'},
+    {id:'b4',icon:'💰',title:'Harga Terjangkau',desc:'Kualitas premium dengan harga yang sangat bersahabat'}
+  ],
+  redeem_codes:[{code:'admin yokotofxownerfynixorstudio',role:'admin',used:false,created_at:'2025-01-01T00:00:00.000Z',expires_at:null,one_time:true}],
+  hosted_files:[]
+};
+
+async function setupGist(token){
+  const res=await fetch('https://api.github.com/gists',{
+    method:'POST',
+    headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify({description:'YokotoFX Studio Database',public:false,files:{'db.json':{content:JSON.stringify(DEFAULT_DB,null,2)}}})
+  });
+  if(!res.ok){const e=await res.json();throw new Error(e.message||'Setup gagal: '+res.status);}
+  const gist=await res.json();
+  saveCfg({gist_id:gist.id,token,setup_done:true});
+  try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:DEFAULT_DB}));}catch(e){}
+  return gist.id;
+}
+
+// ============================================================
+//  APP
+// ============================================================
+let currentDB=null,selProd=null,selPkgType=null;
+
+window.onload=async()=>{
+  // Cek session
+  checkSess();
+  // Setup telegram button
+  document.getElementById('tg-btn').onclick=()=>window.open('https://t.me/Yokoto_saiba','_blank');
+
+  if(!isSetup()){
+    // Tampilkan banner setup
+    document.getElementById('setup-banner').style.display='block';
+    // Adjust hero padding karena ada banner
+    document.getElementById('hero-sec').style.paddingTop='80px';
+    showFallback();
+    return;
+  }
+  await loadData();
+};
+
+async function loadData(){
+  try{
+    currentDB=await gistRead();
+    applySettings(currentDB.site_settings);
+    renderProducts(currentDB.products||[]);
+    renderBenefits(currentDB.benefits||[]);
+  }catch(e){
+    showToast('Gagal load data: '+e.message,'err');
+    showFallback();
+  }
+}
+
+function showFallback(){
+  document.getElementById('p-grid').innerHTML='<p style="color:var(--text2);grid-column:1/-1;text-align:center;padding:30px;font-size:15px;">⚙️ Setup database dulu untuk menampilkan produk.</p>';
+  document.getElementById('b-grid').innerHTML='';
+}
+
+function applySettings(s){
+  if(!s)return;
+  const name=s.name||'YokotoFX Studio';
+  document.title=name;
+  document.getElementById('nav-name').innerHTML=name.replace('FX','<em>FX</em>');
+  document.getElementById('f-name').innerHTML=name.replace('FX','<em>FX</em>')+' Studio';
+  if(s.hero_title)document.getElementById('hero-title').innerHTML=s.hero_title.replace('Trading','<em>Trading</em>');
+  if(s.hero_sub)document.getElementById('hero-sub').textContent=s.hero_sub;
+  const tg=s.telegram||'Yokoto_saiba';
+  document.getElementById('tg-btn').onclick=()=>window.open('https://t.me/'+tg,'_blank');
+}
+
+function renderProducts(products){
+  const grid=document.getElementById('p-grid');
+  const ps=products.filter(p=>p.active);
+  if(!ps.length){grid.innerHTML='<p style="color:var(--text2);grid-column:1/-1;text-align:center;padding:30px;">Belum ada produk tersedia.</p>';return;}
+  grid.innerHTML=ps.map((p,i)=>`
+    <div class="p-card fu" style="animation-delay:${i*0.08}s">
+      <div class="c-icon">${p.icon}</div>
+      <div class="c-name">${p.name}</div>
+      <div class="c-desc">${p.desc}</div>
+      <div class="c-price"><span class="cp-from">Mulai</span><span class="cp-val">Rp ${(p.price_monthly/1000).toFixed(0)}K</span><span class="cp-per">/bln</span></div>
+      <button class="btn-buy" onclick="openPkg('${p.id}')">Beli Sekarang</button>
+    </div>`).join('');
+}
+
+function renderBenefits(benefits){
+  document.getElementById('b-grid').innerHTML=benefits.map(b=>`
+    <div class="b-item"><div class="b-icon">${b.icon}</div><div class="b-txt"><h4>${b.title}</h4><p>${b.desc}</p></div></div>`).join('');
+}
+
+// SIDEBAR
+function openSB(){document.getElementById('sidebar').classList.add('on');document.getElementById('sOverlay').classList.add('on');}
+function closeSB(){document.getElementById('sidebar').classList.remove('on');document.getElementById('sOverlay').classList.remove('on');}
+
+// MODAL
+function openM(id){document.getElementById(id).classList.add('on');}
+function closeM(id){document.getElementById(id).classList.remove('on');}
+
+// PACKAGE
+function openPkg(pid){
+  if(!currentDB){showToast('Data belum dimuat','err');return;}
+  selProd=currentDB.products.find(p=>p.id===pid);
+  selPkgType=null;
+  document.getElementById('pkg-title').textContent=selProd.name;
+  document.getElementById('pkg-mo-p').textContent='Rp '+(selProd.price_monthly/1000).toFixed(0)+'K';
+  document.getElementById('pkg-yr-p').textContent='Rp '+(selProd.price_yearly/1000).toFixed(0)+'K';
+  document.getElementById('pkg-yr-ori').textContent='Rp '+(selProd.price_yearly_original/1000).toFixed(0)+'K';
+  document.getElementById('pkg-yr-save').textContent='Hemat Rp '+((selProd.price_yearly_original-selProd.price_yearly)/1000).toFixed(0)+'K';
+  ['pkg-mo','pkg-yr'].forEach(id=>document.getElementById(id).classList.remove('sel'));
+  const bc=document.getElementById('btn-c');bc.disabled=true;bc.textContent='— Pilih Paket Dulu —';
+  openM('mPkg');
+}
+
+function selPkg(t){
+  selPkgType=t;
+  document.getElementById('pkg-mo').classList.toggle('sel',t==='mo');
+  document.getElementById('pkg-yr').classList.toggle('sel',t==='yr');
+  const bc=document.getElementById('btn-c');bc.disabled=false;bc.textContent='Lanjut ke Telegram →';
+}
+
+function doBuy(){
+  if(!selProd||!selPkgType)return;
+  const tg=(currentDB&&currentDB.site_settings&&currentDB.site_settings.telegram)||'Yokoto_saiba';
+  const n=encodeURIComponent(selProd.name);
+  const url=selPkgType==='mo'
+    ?'https://t.me/'+tg+'?text=bang+mau+beli+'+n+'+yang+1bulan+dengan+harga+Rp+30k'
+    :'https://t.me/'+tg+'?text=bang+mau+beli+'+n+'+yang+1tahun+dengan+harga+Rp+450k';
+  closeM('mPkg');window.open(url,'_blank');
+}
+
+// REDEEM
+function openRedeemModal(){
+  document.getElementById('r-inp').value='';
+  document.getElementById('r-err').style.display='none';
+  openM('mRedeem');
+  setTimeout(()=>document.getElementById('r-inp').focus(),200);
+}
+
+async function doRedeem(){
+  const code=document.getElementById('r-inp').value.trim();
+  const errEl=document.getElementById('r-err');
+  const btn=document.getElementById('r-btn');
+  errEl.style.display='none';
+  if(!code){errEl.textContent='Kode tidak boleh kosong.';errEl.style.display='block';return;}
+  if(!isSetup()){errEl.textContent='Database belum dikonfigurasi.';errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='⏳ Memverifikasi...';
+  try{
+    const db=await gistRead();
+    const entry=(db.redeem_codes||[]).find(c=>c.code===code);
+    if(!entry)throw new Error('Kode tidak ditemukan.');
+    if(entry.one_time&&entry.used)throw new Error('Kode sudah pernah digunakan.');
+    if(isExpired(entry.expires_at))throw new Error('Kode sudah kadaluarsa.');
+    if(entry.one_time){entry.used=true;await gistWrite(db);}
+    setSession({logged_in:true,role:entry.role,code});
+    closeM('mRedeem');
+    showToast('✅ Login berhasil sebagai '+entry.role.toUpperCase(),'ok');
+    setTimeout(()=>{if(entry.role==='admin')window.location.href='admin.html';else checkSess();},900);
+  }catch(e){
+    errEl.textContent='❌ '+e.message;errEl.style.display='block';
+  }finally{
+    btn.disabled=false;btn.textContent='Masukkan Kode';
+  }
+}
+
+// SETUP
+async function doSetup(){
+  const token=document.getElementById('setup-token').value.trim();
+  const errEl=document.getElementById('setup-err');
+  const btn=document.getElementById('setup-btn');
+  errEl.style.display='none';
+  if(!token){errEl.textContent='Token wajib diisi.';errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='⏳ Membuat Gist...';
+  try{
+    const gistId=await setupGist(token);
+    closeM('mSetup');
+    document.getElementById('setup-banner').style.display='none';
+    showToast('✅ Setup berhasil! Gist: '+gistId.slice(0,8)+'...','ok');
+    await loadData();
+  }catch(e){
+    errEl.textContent='❌ '+e.message;errEl.style.display='block';
+  }finally{
+    btn.disabled=false;btn.textContent='🚀 Setup Otomatis';
+  }
+}
+
+async function doManualSetup(){
+  const gist_id=document.getElementById('manual-gist').value.trim();
+  const token=document.getElementById('manual-token').value.trim();
+  const errEl=document.getElementById('setup-err');
+  errEl.style.display='none';
+  if(!gist_id||!token){errEl.textContent='Gist ID dan Token wajib diisi.';errEl.style.display='block';return;}
+  saveCfg({gist_id,token,setup_done:true});
+  try{localStorage.removeItem(CACHE_KEY);}catch(e){}
+  closeM('mSetup');
+  document.getElementById('setup-banner').style.display='none';
+  showToast('✅ Tersambung ke Gist!','ok');
+  await loadData();
+}
+
+function checkSess(){
+  const sess=getSession();
+  if(sess&&sess.logged_in){
+    const btn=document.getElementById('nav-login-btn');
+    btn.textContent=sess.role==='admin'?'⚙️ ADMIN':'👤 USER';
+    btn.onclick=()=>{if(sess.role==='admin')window.location.href='admin.html';};
+  }
+}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type+' show';
+  setTimeout(()=>t.className='toast',3500);
+}
+</script>
+</body>
+</html>

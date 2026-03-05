@@ -1,0 +1,58 @@
+{
+  "site_settings": {
+    "name": "YokotoFX Studio",
+    "telegram": "Yokoto_saiba",
+    "hero_title": "Solusi Digital Trading Terbaik",
+    "hero_sub": "Tools premium untuk trader profesional. Akses alat analisis canggih dengan harga yang sangat terjangkau.",
+    "accent_color": "#2480e8"
+  },
+  "products": [
+    {
+      "id": "p1",
+      "name": "Web Analisis Trading",
+      "desc": "Platform analisis trading canggih dengan berbagai indikator teknikal dan fundamental realtime.",
+      "icon": "📊",
+      "active": true,
+      "price_monthly": 30000,
+      "price_yearly": 450000,
+      "price_yearly_original": 600000
+    },
+    {
+      "id": "p2",
+      "name": "Signal Bot Trading",
+      "desc": "Bot sinyal trading otomatis berbasis AI untuk membantu keputusan entry dan exit terbaik.",
+      "icon": "🤖",
+      "active": true,
+      "price_monthly": 30000,
+      "price_yearly": 450000,
+      "price_yearly_original": 600000
+    },
+    {
+      "id": "p3",
+      "name": "Dashboard Portofolio",
+      "desc": "Monitor seluruh aset dan performa trading Anda dalam satu dashboard yang intuitif.",
+      "icon": "📈",
+      "active": true,
+      "price_monthly": 30000,
+      "price_yearly": 450000,
+      "price_yearly_original": 600000
+    }
+  ],
+  "benefits": [
+    { "id": "b1", "icon": "✅", "title": "Akses Instan", "desc": "Langsung aktif setelah pembayaran dikonfirmasi" },
+    { "id": "b2", "icon": "🔄", "title": "Update Otomatis", "desc": "Selalu dapat versi terbaru tanpa biaya tambahan" },
+    { "id": "b3", "icon": "💬", "title": "Support 24/7", "desc": "Tim support siap membantu via Telegram kapan saja" },
+    { "id": "b4", "icon": "💰", "title": "Harga Terjangkau", "desc": "Kualitas premium dengan harga yang sangat bersahabat" }
+  ],
+  "redeem_codes": [
+    {
+      "code": "admin yokotofxownerfynixorstudio",
+      "role": "admin",
+      "used": false,
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "expires_at": null,
+      "one_time": true
+    }
+  ],
+  "hosted_files": []
+}
